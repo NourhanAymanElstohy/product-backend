@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('title');
             $table->text('description');
             $table->float('price', 8, 2);
-            $table->string('image')->default('https://picsum.photos/500/500')->nullable();
+            $table->string('image');
             $table->timestamps();
         });
     }

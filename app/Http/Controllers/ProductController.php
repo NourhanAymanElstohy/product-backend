@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProduct;
+use App\Http\Requests\UpdateProduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -23,36 +26,36 @@ class ProductController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(StoreProduct $request)
     {
+        $path = $request->file('image')->store('public/images');
+        $path = str_replace('public/', '', $path);
+
         $product = Product::create([
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
+            'image' =>  "/storage/" . $path
         ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('public/images');
-            $path = str_replace('public/', '', $path);
-            $product->image = $path;
-        }
-
-        return response()->json(['message' => 'Product Created successfully'], 200);
+        return response()->json(['message' => 'Product Created successfully', 'data' => $product], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateProduct $request, $id)
     {
         $product = Product::findOrFail($id);
         if (!$product) {
             return response()->json(['message' => 'product is not found'], 404);
         } else {
-            $product->update($request);
+            $product->update($request->validated());
             if ($request->hasFile('image')) {
+                Storage::delete('public/' . $product->getAttributes()['image']);
                 $path = $request->file('image')->store('public/images');
                 $path = str_replace('public/', '', $path);
-                $product->image = $path;
+                $product->image = "/storage/" . $path;
+                $product->save();
             }
-            return response()->json(['message' => 'Product Updated successfully'], 200);
+            return response()->json(['message' => 'Product Updated successfully', 'data' => $product], 200);
         }
     }
 
