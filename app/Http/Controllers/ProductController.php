@@ -43,7 +43,7 @@ class ProductController extends Controller
 
     public function update(UpdateProduct $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'product is not found'], 404);
         } else {
