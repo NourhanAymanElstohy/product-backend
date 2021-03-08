@@ -29,7 +29,6 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });
-// Route::apiResource('products', ProductController::class);
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
